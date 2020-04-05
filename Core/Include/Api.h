@@ -1,18 +1,18 @@
 #pragma once
 
 #ifdef DLL_IMPORT
-#define APPLICATION_IMPORT
 #define RENDERER_IMPORT
-#endif
-
-#ifdef APPLICATION_IMPORT
-#define APPLICATION_API __declspec(dllimport)
-#else
-#define APPLICATION_API __declspec(dllexport)
+#define WINDOW_IMPORT
 #endif
 
 #ifdef RENDERER_IMPORT
 #define RENDERER_API __declspec(dllimport)
 #else
 #define RENDERER_API __declspec(dllexport)
+#endif
+
+#ifdef WINDOW_IMPORT
+#define WINDOW_API __declspec(dllimport)
+#else
+#define WINDOW_API __declspec(dllexport)
 #endif
