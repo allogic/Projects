@@ -1,23 +1,14 @@
 #include <Window.h>
 
-Window::Window(HINSTANCE hInstance, WNDPROC wProc, UInt32 width, UInt32 height)
+Window::Window(HINSTANCE hInstance, UInt32 width, UInt32 height, const WChar8* pClassName, const WChar8* pWindowTitle)
 {
-	WNDCLASS wc = {};
-	wc.lpfnWndProc = wProc;
-	wc.hInstance = hInstance;
-	wc.lpszClassName = pClassId;
-
-	RegisterClass(&wc);
-
-	return;
-
 	mHwnd = CreateWindowEx(
 		0,
-		pClassId,
+		pClassName,
 		pWindowTitle,
 		WS_OVERLAPPEDWINDOW,
-		CW_DEFAULT,
-		CW_DEFAULT,
+		CW_USEDEFAULT,
+		CW_USEDEFAULT,
 		width,
 		height,
 		NULL,
@@ -27,23 +18,7 @@ Window::Window(HINSTANCE hInstance, WNDPROC wProc, UInt32 width, UInt32 height)
 	);
 }
 
-Int32 Window::Show(Int32 nCmdShow)
+void Window::Show(Int32 nCmdShow)
 {
-	if (mHwnd)
-	{
-		ShowWindow(mHwnd, nCmdShow);
-	}
-
-	MSG msg = {};
-
-	while (msg.message != WM_QUIT)
-	{
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
-
-	return 0;
+	ShowWindow(mHwnd, nCmdShow);
 }

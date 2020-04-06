@@ -4,17 +4,55 @@
 #include <Renderer.h>
 #include <Window.h>
 
+constexpr const WChar8* pClassName = L"Projects";
+
+constexpr const UInt32 width = 1280;
+constexpr const UInt32 height = 720;
+
+WNDCLASSEX wcex = {};
+MSG msg = {};
+
+Renderer* pRenderer = nullptr;
+Window* pWindow = nullptr;
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, Int32 nCmdShow)
+_Use_decl_annotations_
+Int32 CALLBACK wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, Int32 nCmdShow)
 {
-	const UInt32 width = 1280;
-	const UInt32 height = 720;
+	wcex.cbSize = sizeof(WNDCLASSEX);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = WindowProc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = hInstance;
+	wcex.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
+	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcex.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
+	wcex.lpszMenuName = NULL;
+	wcex.lpszClassName = pClassName;
+	wcex.hIconSm = LoadIcon(wcex.hInstance, IDI_APPLICATION);
 
-	Renderer renderer(width, height);
-	Window window(hInstance, &WindowProc, width, height);
+	RegisterClassEx(&wcex);
 
-	return window.Show(nCmdShow);
+	pRenderer = new Renderer(width, height);
+	pWindow = new Window(wcex.hInstance, width, height, pClassName, L"Engine");
+
+	pWindow->Show(nCmdShow);
+
+	while (msg.message != WM_QUIT)
+	{
+		if (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessageW(&msg);
+		}
+	}
+
+	delete pWindow;
+	delete pRenderer;
+
+	return 0;
 }
 
 LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -24,24 +62,18 @@ LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 
-		return 0;
+		break;
 	case WM_CREATE:
-		return 0;
+		break;
 	case WM_KEYDOWN:
-		std::wcout << L"down" << L'\n';
-		return 0;
+		break;
 	case WM_KEYUP:
-		std::wcout << L"up" << L'\n';
-		return 0;
+		break;
 	case WM_PAINT:
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hwnd, &ps);
-
-		FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-
-		EndPaint(hwnd, &ps);
-		return 0;
+		break;
+	default:
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
-	return DefWindowProc(hwnd, uMsg, lParam, wParam);
+	return 0;
 }
